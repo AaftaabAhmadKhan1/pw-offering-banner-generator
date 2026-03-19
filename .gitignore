@@ -20,3 +20,5 @@ outputs/*.jpeg
 .DS_Store
 Thumbs.db
 *.log
+
+.vercel
