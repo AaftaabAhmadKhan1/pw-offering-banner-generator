@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offering Banner Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Reddit+Sans:wght@400;500;600;700&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/jpeg" href="/icon.jpg">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <div class="ambient ambient-one"></div>
+        <div class="ambient ambient-two"></div>
+
+        <div class="app-layout">
+            <aside class="sidebar">
+                <div class="brand-card">
+                    <div class="brand-mark" aria-hidden="true">
+                        <img src="/icon.jpg" alt="Offering Banner Generator icon">
+                    </div>
+                    <div class="brand-copy">
+                        <h1>Offering Banner Generator</h1>
+                    </div>
+                </div>
+
+                <form id="bannerForm" class="control-stack" onsubmit="return false;">
+                    <section class="panel-card">
+                        <div class="panel-head">
+                            <div>
+                                <p class="panel-kicker">Platforms</p>
+                                <h2>Banner Targets</h2>
+                            </div>
+                            <span class="panel-tag">multi-select</span>
+                        </div>
+
+                        <div class="choice-grid">
+                            <label class="choice-card choice-card-checkbox">
+                                <input type="checkbox" id="platformApp" name="platform" value="app" checked>
+                                <span class="choice-body">
+                                    <span class="choice-icon" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" fill="none">
+                                            <rect x="7" y="2.75" width="10" height="18.5" rx="2.75"></rect>
+                                            <path d="M10 5.75H14"></path>
+                                            <path d="M11.25 18H12.75"></path>
+                                        </svg>
+                                    </span>
+                                    <span class="choice-copy">
+                                        <strong>App</strong>
+                                        <small>Mobile plan card set</small>
+                                    </span>
+                                </span>
+                            </label>
+
+                            <label class="choice-card choice-card-checkbox">
+                                <input type="checkbox" id="platformWeb" name="platform" value="web">
+                                <span class="choice-body">
+                                    <span class="choice-icon" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" fill="none">
+                                            <rect x="3" y="4.5" width="18" height="12" rx="2.5"></rect>
+                                            <path d="M8 20H16"></path>
+                                            <path d="M12 16.5V20"></path>
+                                        </svg>
+                                    </span>
+                                    <span class="choice-copy">
+                                        <strong>Web</strong>
+                                        <small>Desktop plan card set</small>
+                                    </span>
+                                </span>
+                            </label>
+                        </div>
+                    </section>
+
+                    <section class="panel-card">
+                        <div class="panel-head">
+                            <div>
+                                <p class="panel-kicker">Theme</p>
+                                <h2>Plan Family</h2>
+                            </div>
+                        </div>
+
+                        <label class="select-shell" for="planTheme">
+                            <span class="select-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none">
+                                    <path d="M12 3L14.9 8.86L21.36 9.8L16.68 14.37L17.78 20.82L12 17.78L6.22 20.82L7.32 14.37L2.64 9.8L9.1 8.86L12 3Z"></path>
+                                </svg>
+                            </span>
+                            <select id="planTheme" class="field-select" name="planTheme">
+                                <option value="basic">Basic</option>
+                                <option value="infinity">Infinity</option>
+                                <option value="pro">Pro</option>
+                            </select>
+                        </label>
+
+                        <p class="helper-copy" id="themeDescription"></p>
+                    </section>
+
+                    <section class="panel-card">
+                        <div class="panel-head">
+                            <div>
+                                <p class="panel-kicker">Modes</p>
+                                <h2>Display Variants</h2>
+                            </div>
+                            <span class="panel-tag">multi-select</span>
+                        </div>
+
+                        <div class="choice-grid">
+                            <label class="choice-card choice-card-checkbox">
+                                <input type="checkbox" id="modeLight" name="displayMode" value="light" checked>
+                                <span class="choice-body">
+                                    <span class="choice-icon" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" fill="none">
+                                            <circle cx="12" cy="12" r="4"></circle>
+                                            <path d="M12 2.5V5"></path>
+                                            <path d="M12 19V21.5"></path>
+                                            <path d="M4.93 4.93L6.7 6.7"></path>
+                                            <path d="M17.3 17.3L19.07 19.07"></path>
+                                            <path d="M2.5 12H5"></path>
+                                            <path d="M19 12H21.5"></path>
+                                            <path d="M4.93 19.07L6.7 17.3"></path>
+                                            <path d="M17.3 6.7L19.07 4.93"></path>
+                                        </svg>
+                                    </span>
+                                    <span class="choice-copy">
+                                        <strong>Light</strong>
+                                        <small>White banner background</small>
+                                    </span>
+                                </span>
+                            </label>
+
+                            <label class="choice-card choice-card-checkbox">
+                                <input type="checkbox" id="modeDark" name="displayMode" value="dark">
+                                <span class="choice-body">
+                                    <span class="choice-icon" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" fill="none">
+                                            <path d="M20 14.5A7.5 7.5 0 1 1 9.5 4A6.25 6.25 0 0 0 20 14.5Z"></path>
+                                        </svg>
+                                    </span>
+                                    <span class="choice-copy">
+                                        <strong>Dark</strong>
+                                        <small>Ink-black banner background</small>
+                                    </span>
+                                </span>
+                            </label>
+                        </div>
+                    </section>
+
+                    <section class="panel-card feature-panel">
+                        <div class="panel-head">
+                            <div>
+                                <p class="panel-kicker">Content</p>
+                                <h2>Features</h2>
+                            </div>
+                            <span class="panel-tag" id="featureCount" aria-live="polite">0 items</span>
+                        </div>
+
+                        <div class="feature-list" id="featureList"></div>
+
+                        <button type="button" class="ghost-button" id="addFeatureBtn">
+                            <span aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none">
+                                    <path d="M12 5V19"></path>
+                                    <path d="M5 12H19"></path>
+                                </svg>
+                            </span>
+                            Add Feature
+                        </button>
+                    </section>
+                </form>
+            </aside>
+
+            <main class="preview-column">
+                <div class="preview-meta">
+                    <span class="status-pill">
+                        <span class="status-dot"></span>
+                        Batch Preview
+                    </span>
+
+                    <div class="meta-chip-row">
+                        <span class="meta-chip" id="selectionBadge">1 banner selected</span>
+                        <span class="meta-chip" id="modeBadge">Light Mode</span>
+                        <span class="meta-chip" id="themeBadge">Basic Plan</span>
+                    </div>
+                </div>
+
+                <section class="preview-panel">
+                    <div class="preview-scroll">
+                        <div class="preview-header">
+                            <div>
+                                <h2>Banner Preview</h2>
+                                <p id="previewSubheading">Basic plan card set</p>
+                            </div>
+                            <div class="preview-toggle-group" id="previewToggleGroup"></div>
+                        </div>
+
+                        <div class="preview-board" id="previewBoard">
+                            <div class="empty-state" id="emptyState">
+                                <div class="empty-illustration" aria-hidden="true">
+                                    <svg viewBox="0 0 200 160" fill="none">
+                                        <path d="M50 48H90L102 62H148C155.732 62 162 68.268 162 76V116C162 123.732 155.732 130 148 130H52C44.268 130 38 123.732 38 116V60C38 53.3726 43.3726 48 50 48Z" fill="url(#folderFill)"></path>
+                                        <path d="M138 94C138 106.15 128.15 116 116 116C103.85 116 94 106.15 94 94C94 81.85 103.85 72 116 72C128.15 72 138 81.85 138 94Z" fill="white"></path>
+                                        <path d="M132 110L148 128" stroke="#5468FF" stroke-width="8" stroke-linecap="round"></path>
+                                        <path d="M72 70H104" stroke="#3B4CB8" stroke-width="5" stroke-linecap="round" opacity="0.9"></path>
+                                        <path d="M72 84H96" stroke="#3B4CB8" stroke-width="5" stroke-linecap="round" opacity="0.65"></path>
+                                        <path d="M72 98H88" stroke="#3B4CB8" stroke-width="5" stroke-linecap="round" opacity="0.45"></path>
+                                        <circle cx="146" cy="44" r="3" fill="#7E8CFF"></circle>
+                                        <circle cx="158" cy="58" r="2.5" fill="#7E8CFF"></circle>
+                                        <circle cx="44" cy="38" r="3" fill="#7E8CFF"></circle>
+                                        <defs>
+                                            <linearGradient id="folderFill" x1="38" y1="48" x2="165" y2="132" gradientUnits="userSpaceOnUse">
+                                                <stop stop-color="#7C9BFF"></stop>
+                                                <stop offset="0.48" stop-color="#74E3D5"></stop>
+                                                <stop offset="1" stop-color="#F08DB9"></stop>
+                                            </linearGradient>
+                                        </defs>
+                                    </svg>
+                                </div>
+                                <div class="empty-copy">
+                                    <p class="empty-kicker">No Preview Yet</p>
+                                    <h3>Select at least one platform, one mode, and add features to generate banners.</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="preview-footer">
+                        <div>
+                            <p class="preview-title">Export</p>
+                            <p class="preview-copy" id="exportHint">PNG export will use the same compact banner style as the preview cards.</p>
+                        </div>
+
+                        <button type="button" class="download-button" id="downloadBtn" disabled>
+                            Export Banners
+                        </button>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
