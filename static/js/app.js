@@ -59,7 +59,7 @@ const MODE_CONFIG = {
     light: {
         label: "Light Mode",
         background: "#FFFFFF",
-        text: "#3E434D",
+        text: "#3D3D3D",
     },
     dark: {
         label: "Dark Mode",
@@ -407,23 +407,50 @@ function measureBannerLayout(ctx, features, platformKey) {
 function drawStar(ctx, x, y, radius, color, fillColor) {
     const spikes = 5;
     const outer = radius;
-    const inner = radius * 0.45;
-    let rotation = Math.PI / 2 * 3;
+    const inner = radius * 0.52;
+    const cornerRadius = radius * 0.18;
+    let rotation = -Math.PI / 2;
     const step = Math.PI / spikes;
+    const points = [];
+
+    for (let spike = 0; spike < spikes; spike += 1) {
+        points.push({
+            x: x + Math.cos(rotation) * outer,
+            y: y + Math.sin(rotation) * outer,
+        });
+        rotation += step;
+        points.push({
+            x: x + Math.cos(rotation) * inner,
+            y: y + Math.sin(rotation) * inner,
+        });
+        rotation += step;
+    }
 
     ctx.beginPath();
-    ctx.moveTo(x, y - outer);
-    for (let spike = 0; spike < spikes; spike += 1) {
-        ctx.lineTo(x + Math.cos(rotation) * outer, y + Math.sin(rotation) * outer);
-        rotation += step;
-        ctx.lineTo(x + Math.cos(rotation) * inner, y + Math.sin(rotation) * inner);
-        rotation += step;
+    for (let index = 0; index < points.length; index += 1) {
+        const prev = points[(index - 1 + points.length) % points.length];
+        const current = points[index];
+        const next = points[(index + 1) % points.length];
+        const startX = current.x + ((prev.x - current.x) * cornerRadius) / outer;
+        const startY = current.y + ((prev.y - current.y) * cornerRadius) / outer;
+        const endX = current.x + ((next.x - current.x) * cornerRadius) / outer;
+        const endY = current.y + ((next.y - current.y) * cornerRadius) / outer;
+
+        if (index === 0) {
+            ctx.moveTo(startX, startY);
+        } else {
+            ctx.lineTo(startX, startY);
+        }
+
+        ctx.quadraticCurveTo(current.x, current.y, endX, endY);
     }
     ctx.closePath();
     ctx.fillStyle = fillColor || hexToRgba(color, 0.32);
     ctx.fill();
     ctx.lineWidth = 4.5;
     ctx.strokeStyle = color;
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
     ctx.stroke();
 }
 
