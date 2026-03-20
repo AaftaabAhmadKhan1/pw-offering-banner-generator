@@ -360,7 +360,7 @@ function renderBannerToCanvas(features, themeKey, modeKey, platformKey) {
 
 function measureBannerLayout(ctx, features, platformKey) {
     const platform = PLATFORM_CONFIG[platformKey];
-    const visible = features.slice(0, 6);
+    const visible = features;
     const columns = platform.columns;
     const columnWidth = (platform.exportWidth - platform.paddingX * 2 - platform.columnGap * (columns - 1)) / columns;
 
