@@ -407,7 +407,7 @@ function measureBannerLayout(ctx, features, platformKey) {
 function drawStar(ctx, x, y, radius, color, fillColor) {
     const spikes = 5;
     const outer = radius;
-    const inner = radius * 0.52;
+    const inner = radius * 0.34;
     let rotation = -Math.PI / 2;
     const step = Math.PI / spikes;
 
@@ -422,11 +422,11 @@ function drawStar(ctx, x, y, radius, color, fillColor) {
     ctx.closePath();
     ctx.fillStyle = fillColor || hexToRgba(color, 0.32);
     ctx.fill();
-    ctx.lineWidth = 4.5;
+    ctx.lineWidth = 4;
     ctx.strokeStyle = color;
     ctx.lineJoin = "miter";
     ctx.lineCap = "butt";
-    ctx.miterLimit = 2;
+    ctx.miterLimit = 12;
     ctx.stroke();
 }
 
