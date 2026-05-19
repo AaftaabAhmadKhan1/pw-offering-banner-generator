@@ -6,7 +6,7 @@ Open: http://localhost:5000
 
 from pathlib import Path
 import os
-import pandas as pd
+import csv
 from io import BytesIO
 
 from flask import Flask, render_template, send_from_directory, request, jsonify, send_file
@@ -32,15 +32,27 @@ def icon_file():
 
 @app.route("/download-sample")
 def download_sample():
-    df = pd.DataFrame({
-        "theme": ["basic", "infinity", "pro"],
-        "platforms": ["app", "app,web", "web"],
-        "modes": ["light", "dark", "light,dark"],
-        "features": ["100+ Live Classes, Free Notes", "Unlimited Mock Tests, 24/7 Doubt Solving", "1-on-1 Mentorship, Personal Guide"]
-    })
+    import openpyxl
+    # Create an in-memory workbook
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Sheet1"
+    
+    # Write headers
+    headers = ["theme", "platforms", "modes", "features"]
+    ws.append(headers)
+    
+    # Write sample data
+    rows = [
+        ["basic", "app", "light", "100+ Live Classes, Free Notes"],
+        ["infinity", "app,web", "dark", "Unlimited Mock Tests, 24/7 Doubt Solving"],
+        ["pro", "web", "light,dark", "1-on-1 Mentorship, Personal Guide"]
+    ]
+    for r in rows:
+        ws.append(r)
+    
     output = BytesIO()
-    with pd.ExcelWriter(output, engine='openpyxl') as writer:
-        df.to_excel(writer, index=False, sheet_name='Sheet1')
+    wb.save(output)
     output.seek(0)
     return send_file(output, download_name="bulk_offering_sample.xlsx", as_attachment=True)
 
@@ -52,23 +64,34 @@ def upload_bulk():
     if file.filename == '':
         return jsonify({"error": "No file selected"}), 400
     
+    banners = []
     try:
         if file.filename.endswith('.csv'):
-            df = pd.read_csv(file)
+            stream = file.stream.read().decode('utf-8').splitlines()
+            reader = csv.DictReader(stream)
+            for row in reader:
+                banners.append({
+                    "theme": str(row.get("theme", "basic")).strip().lower(),
+                    "platforms": [p.strip().lower() for p in str(row.get("platforms", "app")).split(",") if p.strip()],
+                    "modes": [m.strip().lower() for m in str(row.get("modes", "light")).split(",") if m.strip()],
+                    "features": [f.strip() for f in str(row.get("features", "")).split(",") if f.strip()]
+                })
         else:
-            df = pd.read_excel(file)
-        
-        # Parse data
-        banners = []
-        for index, row in df.iterrows():
-            item = {
-                "theme": str(row.get("theme", "basic")).strip().lower(),
-                "platforms": [p.strip().lower() for p in str(row.get("platforms", "app")).split(",")],
-                "modes": [m.strip().lower() for m in str(row.get("modes", "light")).split(",")],
-                "features": [f.strip() for f in str(row.get("features", "")).split(",") if f.strip()]
-            }
-            banners.append(item)
-            
+            import openpyxl
+            wb = openpyxl.load_workbook(file)
+            ws = wb.active
+            headers = [cell.value for cell in ws[1]]
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                row_dict = dict(zip(headers, row))
+                if all(v is None for v in row_dict.values()):
+                    continue
+                banners.append({
+                    "theme": str(row_dict.get("theme", "basic")).strip().lower(),
+                    "platforms": [p.strip().lower() for p in str(row_dict.get("platforms", "app")).split(",") if p.strip()],
+                    "modes": [m.strip().lower() for m in str(row_dict.get("modes", "light")).split(",") if m.strip()],
+                    "features": [f.strip() for f in str(row_dict.get("features", "")).split(",") if f.strip()]
+                })
+                
         return jsonify({"success": True, "banners": banners})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
