@@ -59,7 +59,7 @@ const MODE_CONFIG = {
     light: {
         label: "Light Mode",
         background: "#FFFFFF",
-        text: "#3D3D3D",
+        text: "#3E434D",
     },
     dark: {
         label: "Dark Mode",
@@ -91,9 +91,16 @@ document.addEventListener("DOMContentLoaded", () => {
         emptyState: document.getElementById("emptyState"),
         downloadBtn: document.getElementById("downloadBtn"),
         addFeatureBtn: document.getElementById("addFeatureBtn"),
+        bulkUploadBtn: document.getElementById("bulkUploadBtn"),
+        bulkUploadFile: document.getElementById("bulkUploadFile"),
         form: document.getElementById("bannerForm"),
         planTheme: document.getElementById("planTheme"),
     };
+
+    if(refs.bulkUploadBtn) {
+        refs.bulkUploadBtn.addEventListener("click", () => refs.bulkUploadFile.click());
+        refs.bulkUploadFile.addEventListener("change", handleBulkUpload);
+    }
 
     refs.addFeatureBtn.addEventListener("click", () => addFeature("", true));
     refs.downloadBtn.addEventListener("click", downloadBanners);
@@ -360,7 +367,7 @@ function renderBannerToCanvas(features, themeKey, modeKey, platformKey) {
 
 function measureBannerLayout(ctx, features, platformKey) {
     const platform = PLATFORM_CONFIG[platformKey];
-    const visible = features;
+    const visible = features.slice(0, 6);
     const columns = platform.columns;
     const columnWidth = (platform.exportWidth - platform.paddingX * 2 - platform.columnGap * (columns - 1)) / columns;
 
@@ -407,8 +414,8 @@ function measureBannerLayout(ctx, features, platformKey) {
 function drawStar(ctx, x, y, radius, color, fillColor) {
     const spikes = 5;
     const outer = radius;
-    const inner = radius * 0.52;
-    let rotation = -Math.PI / 2;
+    const inner = radius * 0.45;
+    let rotation = Math.PI / 2 * 3;
     const step = Math.PI / spikes;
 
     ctx.beginPath();
@@ -424,9 +431,6 @@ function drawStar(ctx, x, y, radius, color, fillColor) {
     ctx.fill();
     ctx.lineWidth = 4.5;
     ctx.strokeStyle = color;
-    ctx.lineJoin = "miter";
-    ctx.lineCap = "butt";
-    ctx.miterLimit = 2;
     ctx.stroke();
 }
 
@@ -549,4 +553,32 @@ function hexToRgba(hex, alpha) {
     const green = Number.parseInt(value.slice(2, 4), 16);
     const blue = Number.parseInt(value.slice(4, 6), 16);
     return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+}
+
+async function handleBulkUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+        const response = await fetch('/upload-bulk', { method: 'POST', body: formData });
+        const data = await response.json();
+        if (data.success && data.banners) {
+            let index = 0;
+            for (const item of data.banners) {
+                for (const platformKey of item.platforms) {
+                    for (const modeKey of item.modes) {
+                        if (!PLATFORM_CONFIG[platformKey] || !MODE_CONFIG[modeKey] || !THEME_CONFIG[item.theme]) continue;
+                        const canvas = renderBannerToCanvas(item.features, item.theme, modeKey, platformKey);
+                        const link = document.createElement('a');
+                        link.href = canvas.toDataURL('image/png');
+                        link.download = `${THEME_CONFIG[item.theme].filePrefix}-${capitalize(platformKey)}-${modeKey}-banner.png`;
+                        setTimeout(() => { link.click(); }, index * 300);
+                        index++;
+                    }
+                }
+            }
+        } else { alert(data.error || 'Failed to process file'); }
+    } catch (e) { alert('Upload failed: ' + e); }
+    event.target.value = '';
 }
